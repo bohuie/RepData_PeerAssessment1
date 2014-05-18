@@ -296,3 +296,66 @@ Because my imputation strategy replaces missing values with 0 when no mean exist
 However, there is no impact on the rest of the data when we are looking at the total daily number of steps.
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+I will first modify fulldata with an additional factor that denotes whether the date in that row is a weekday or a weekend day. Just to be sure, I will check that the data has both weekdays and weekends in them:
+
+
+```r
+# modify fulldata with additional factor
+fulldata$day <- weekdays(as.Date(fulldata$date))
+selected = cbind("Saturday", "Sunday")
+fulldata$wday <- ifelse(fulldata$day %in% selected, "weekend", "weekday")
+head(fulldata)
+```
+
+```
+##   steps       date interval    day    wday
+## 1     0 2012-10-01        0 Monday weekday
+## 2     0 2012-10-01        5 Monday weekday
+## 3     0 2012-10-01       10 Monday weekday
+## 4     0 2012-10-01       15 Monday weekday
+## 5     0 2012-10-01       20 Monday weekday
+## 6     0 2012-10-01       25 Monday weekday
+```
+
+```r
+unique(fulldata$day)
+```
+
+```
+## [1] "Monday"    "Tuesday"   "Wednesday" "Thursday"  "Friday"    "Saturday" 
+## [7] "Sunday"
+```
+
+```r
+unique(fulldata$wday)
+```
+
+```
+## [1] "weekday" "weekend"
+```
+
+
+Now I will split the data up into a subset that only has weekdays in it and another subset that only has weekends in it, and put them into the time series format as earlier:
+
+
+
+```r
+d1 <- fulldata[fulldata$wday == "weekday", ]
+i1data <- aggregate(d1$steps, list(interval = d1$interval), mean)
+d2 <- fulldata[fulldata$wday == "weekend", ]
+i2data <- aggregate(d2$steps, list(interval = d2$interval), mean)
+```
+
+
+Now I will do a two-panel plot on the time series data:
+
+
+```r
+par(mfrow = c(2, 1))
+plot(i1data, type = "l", main = "Weekdays", xlab = "Interval", ylab = "Number of Steps (Averaged over Days)")
+plot(i2data, type = "l", main = "Weekends", xlab = "Interval", ylab = "Number of Steps (Averaged over Days)")
+```
+
+![plot of chunk unnamed-chunk-18](figure/unnamed-chunk-18.png) 
+
