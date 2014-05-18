@@ -6,6 +6,7 @@ First I'm going to require the library and load the data:
 ```{r}
 library(knitr)
 data <- read.csv("activity.csv")
+summary(data)
 ```
 
 
