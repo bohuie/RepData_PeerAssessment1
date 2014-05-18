@@ -6,17 +6,60 @@ First I'm going to require the library and load the data:
 ```{r}
 library(knitr)
 data <- read.csv("activity.csv")
-summary(data)
+head(data)
 ```
 
 
 ## What is mean total number of steps taken per day?
 
+Since we want to exclude missing values, I am going to first operate on only the data without NA's: 
 
+```{r}
+smdata <- na.omit(data)
+head(smdata)
+```
+
+Next, I will now aggregate the data by date and look at the total number of steps taken each day:
+
+```{r}
+sdata <- aggregate( smdata$steps, list(day=smdata$date), sum )
+head(sdata)
+```
+
+Here is the histogram, the mean, and median of the total number of steps each day:
+```{r}
+hist(sdata$x, breaks=20, main="Histogram of Total Number of Days", xlab="Total Number of Steps (Summed over Intervals)" )
+mean(sdata$x)
+median(sdata$x)
+```
 
 ## What is the average daily activity pattern?
+I am assuming that we are still ignore all the NA data here. So I will continue this part of the assignment with smdata that I created above. This time, I will aggregate by interval and average the steps over days:
 
+```{r}
+idata <- aggregate( smdata$steps, list(interval=smdata$interval), mean )
+head(idata)
+tail(idata)
+```
 
+As indicated in the instructions, I will now plot this data:
+
+```{r}
+plot( idata, type="l" )
+title( main="Average Daily Activity Pattern", xlab="Interval", ylab="Number of Steps (Averaged over Days)" )
+```
+
+The interval with the maximum number of steps from this data is:
+
+```{r}
+which.max( idata$x )
+```
+
+Which corresponds with the following interval value:
+
+```{r}
+idata$interval[ which.max( idata$x ) ]
+```
 
 ## Imputing missing values
 
